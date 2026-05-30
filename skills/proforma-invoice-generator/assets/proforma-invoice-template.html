@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Proforma Invoice</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@300;400;500;600;700&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', 'Noto Sans', Arial, sans-serif; background: #fff; color: #1a1a2e; font-size: 13px; line-height: 1.5; }
+  .page { width: 210mm; min-height: 297mm; padding: 18mm 20mm 15mm 20mm; margin: 0 auto; background: #fff; box-sizing: border-box; }
+
+  .header { display: flex; justify-content: space-between; align-items: flex-start; padding-bottom: 12px; border-bottom: 2px solid #1a1a2e; margin-bottom: 14px; }
+  .company-name { font-size: 22px; font-weight: 800; letter-spacing: 0.5px; line-height: 1.2; }
+  .company-name span { display: block; font-size: 11px; font-weight: 400; letter-spacing: 0.3px; margin-top: 4px; color: #555; }
+  .header-right { text-align: right; }
+  .invoice-title { font-size: 28px; font-weight: 800; letter-spacing: 3px; text-transform: uppercase; color: #1a1a2e; margin-bottom: 4px; }
+  .invoice-meta table { border: none; }
+  .invoice-meta td { padding: 2px 0; text-align: right; font-size: 12px; }
+  .invoice-meta td:first-child { color: #888; font-weight: 500; padding-right: 12px; min-width: 90px; }
+  .invoice-meta td:last-child { font-weight: 600; min-width: 140px; }
+
+  .sec-label { font-size: 9px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #fff; background: #1a1a2e; padding: 5px 10px; margin-bottom: 8px; }
+
+  .addresses { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px; }
+  .addr-block { background: #f7f7f9; padding: 10px 12px; border-radius: 4px; }
+  .addr-block table { border: none; }
+  .addr-block td { padding: 1px 0; font-size: 12px; }
+  .addr-block td:first-child { color: #888; font-weight: 500; padding-right: 10px; white-space: nowrap; }
+  .addr-block td:last-child { font-weight: 400; }
+
+  .goods-table { width: 100%; border-collapse: collapse; margin-bottom: 14px; font-size: 12px; }
+  .goods-table thead tr { background: #1a1a2e; color: #fff; }
+  .goods-table thead th { padding: 7px 8px; text-align: center; font-weight: 600; font-size: 10px; letter-spacing: 0.5px; }
+  .goods-table thead th:first-child { text-align: left; }
+  .goods-table thead th:last-child { text-align: right; }
+  .goods-table tbody tr { border-bottom: 1px solid #e8e8f0; }
+  .goods-table tbody tr:nth-child(even) { background: #fafafd; }
+  .goods-table tbody td { padding: 7px 8px; text-align: center; vertical-align: middle; }
+  .goods-table tbody td:first-child { text-align: left; }
+  .goods-table tbody td:last-child { text-align: right; }
+  .goods-table tfoot tr { background: #f0f0f5; font-weight: 700; }
+  .goods-table tfoot td { padding: 7px 8px; text-align: right; }
+  .goods-table tfoot td:first-child { text-align: right; font-weight: 700; border: none; }
+  .goods-table .section-row td { padding: 5px 8px; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; background: #f0f0f5; color: #1a1a2e; text-align: left; border: none; }
+  .total-row td { background: #1a1a2e !important; color: #fff !important; font-size: 13px; font-weight: 700; padding: 9px 8px !important; }
+  .total-row td:first-child { text-align: right; }
+
+  .terms-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px; }
+  .terms-block { background: #f7f7f9; padding: 10px 12px; border-radius: 4px; }
+  .terms-block table { border: none; width: 100%; }
+  .terms-block td { padding: 2px 0; font-size: 12px; vertical-align: top; }
+  .terms-block td:first-child { color: #888; font-weight: 500; padding-right: 10px; white-space: nowrap; width: 45%; }
+  .terms-block td:last-child { font-weight: 400; }
+
+  .bank-box { border: 1.5px solid #1a1a2e; border-radius: 6px; padding: 14px 16px; margin-bottom: 14px; }
+  .bank-box table { border: none; width: 100%; }
+  .bank-box td { padding: 3px 4px; font-size: 12px; }
+  .bank-box td:first-child { color: #888; font-weight: 500; padding-right: 12px; white-space: nowrap; }
+  .bank-box td:last-child { font-weight: 400; }
+
+  .signature { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 30px; }
+  .sig-block { text-align: center; }
+  .sig-line { border-top: 1.5px solid #1a1a2e; margin-top: 40px; padding-top: 6px; font-size: 11px; color: #888; }
+  .sig-block-title { font-weight: 700; font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: #1a1a2e; }
+
+  .footer-note { margin-top: 20px; font-size: 10px; color: #999; border-top: 1px solid #e0e0e8; padding-top: 8px; text-align: center; font-style: italic; }
+
+  .badge { display: inline-block; background: #1a1a2e; color: #fff; font-size: 10px; font-weight: 700; letter-spacing: 1px; padding: 3px 8px; border-radius: 3px; margin-top: 4px; }
+
+  @media print {
+    body { background: #fff; }
+    .page { box-shadow: none; margin: 0; padding: 18mm 20mm 15mm 20mm; }
+    .goods-table thead th { background: #1a1a2e !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .goods-table tbody tr:nth-child(even) { background: #fafafd !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .goods-table .total-row td { background: #1a1a2e !important; color: #fff !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="header">
+    <div>
+      <div class="company-name">HANGZHOU BETRUE IMPORT &amp; EXPORT CO., LTD<span>杭州碧图进出口有限公司</span></div>
+      <div style="margin-top:6px; font-size:11px; color:#555; line-height:1.7; max-width:280px;">
+        1-213, Qunlian Comprehensive Building, Sandun Town,<br>Westlake District, Hangzhou, P.R. CHINA<br>
+        Tel: +86 186 0588 1846 &nbsp; Email: factorihub@outlook.com
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="invoice-title">PROFORMA INVOICE</div>
+      <div class="badge">P/I ONLY — NOT FOR CUSTOMS</div>
+      <div class="invoice-meta" style="margin-top:10px;">
+        <table>
+          <tr><td>P/I No.</td><td>{{pi_number}}</td></tr>
+          <tr><td>Date</td><td>{{issue_date}}</td></tr>
+          <tr><td>Valid Until</td><td>{{valid_until}}</td></tr>
+          <tr><td>Ref. No.</td><td>{{ref_number}}</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec-label">Buyer &amp; Destination</div>
+  <div class="addresses">
+    <div class="addr-block">
+      <table>
+        <tr><td>Buyer / Consignee</td><td>{{buyer_name}}</td></tr>
+        <tr><td>Address</td><td>{{buyer_address}}</td></tr>
+        <tr><td>Contact Person</td><td>{{buyer_contact}}</td></tr>
+        <tr><td>Email</td><td>{{buyer_email}}</td></tr>
+        <tr><td>Tel</td><td>{{buyer_tel}}</td></tr>
+        <tr><td>VAT / Tax ID / EORI</td><td>{{buyer_vat}}</td></tr>
+      </table>
+    </div>
+    <div class="addr-block">
+      <table>
+        <tr><td>Port / Destination</td><td>{{destination_port}}</td></tr>
+        <tr><td>Final Destination</td><td>{{final_destination}}</td></tr>
+        <tr><td>Shipping Term</td><td>{{incoterm}}</td></tr>
+        <tr><td>Loading Port</td><td>{{loading_port}}</td></tr>
+        <tr><td>Payment</td><td>{{payment_terms}}</td></tr>
+        <tr><td>Expected Shipment</td><td>{{expected_shipment}}</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="sec-label">Goods &amp; Amounts</div>
+  <table class="goods-table">
+    <thead>
+      <tr>
+        <th>No.</th>
+        <th>Article / Description</th>
+        <th>HS Code</th>
+        <th>Qty</th>
+        <th>Unit</th>
+        <th>Unit Price ({{currency}})</th>
+        <th>Amount ({{currency}})</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each goods}}
+      <tr>
+        <td>{{add @index 1}}</td>
+        <td>{{article}}</td>
+        <td>{{hs_code}}</td>
+        <td>{{qty}}</td>
+        <td>{{unit}}</td>
+        <td>{{format_number unit_price}}</td>
+        <td>{{format_number amount}}</td>
+      </tr>
+      {{/each}}
+    </tbody>
+    <tfoot>
+      <tr class="section-row"><td colspan="7">Summary</td></tr>
+      <tr><td colspan="6" style="text-align:right;font-weight:600">Subtotal</td><td>{{format_number subtotal}}</td></tr>
+      {{#if service_fee}}
+      <tr><td colspan="6" style="text-align:right">Service Fee (+{{service_fee_rate}}%)</td><td>{{format_number service_fee}}</td></tr>
+      {{/if}}
+      {{#if other_fee_label}}
+      <tr><td colspan="6" style="text-align:right">{{other_fee_label}}</td><td>{{format_number other_fee}}</td></tr>
+      {{/if}}
+      <tr class="total-row"><td colspan="6">GRAND TOTAL</td><td>{{format_number grand_total}}</td></tr>
+    </tfoot>
+  </table>
+
+  <div style="font-size:10px; color:#888; margin-bottom:14px; font-style:italic;">
+    * Grand Total in words: <strong>{{total_in_words}}</strong>
+  </div>
+
+  <div class="sec-label">Terms &amp; Conditions</div>
+  <div class="terms-grid">
+    <div class="terms-block">
+      <table>
+        <tr><td>Payment Method</td><td>{{payment_method}}</td></tr>
+        <tr><td>Payment Terms</td><td>{{payment_terms_detail}}</td></tr>
+        <tr><td>Currency</td><td>{{currency}}</td></tr>
+        <tr><td>Lead Time</td><td>{{lead_time}}</td></tr>
+        <tr><td>Delivery Term</td><td>{{incoterm_detail}}</td></tr>
+        <tr><td>Packaging</td><td>{{packaging}}</td></tr>
+      </table>
+    </div>
+    <div class="terms-block">
+      <table>
+        <tr><td>Country of Origin</td><td>CHINA</td></tr>
+        <tr><td>Inspection</td><td>{{inspection}}</td></tr>
+        <tr><td>Shipping Mark</td><td>{{shipping_mark}}</td></tr>
+        <tr><td>Insurance</td><td>{{insurance}}</td></tr>
+        <tr><td>Quality Standard</td><td>{{quality_std}}</td></tr>
+        <tr><td>Remarks</td><td>{{remarks}}</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="sec-label">Bank Details for Payment</div>
+  <div class="bank-box">
+    <table>
+      <tr><td>Beneficiary Name</td><td>HANGZHOU BETRUE IMPORT &amp; EXPORT CO., LTD</td></tr>
+      <tr><td>Beneficiary Address</td><td>1-213, Qunlian Comprehensive Building, Sandun Town, Westlake District, Hangzhou, P.R. CHINA</td></tr>
+      <tr><td>Beneficiary Bank</td><td>{{beneficiary_bank}}</td></tr>
+      <tr><td>Bank Address</td><td>{{bank_address}}</td></tr>
+      <tr><td>Bank Tel.</td><td>{{bank_tel}}</td></tr>
+      <tr><td>SWIFT Code</td><td>{{swift_code}}</td></tr>
+      {{#if cnaps}}<tr><td>CNAPS</td><td>{{cnaps}}</td></tr>{{/if}}
+      <tr><td>{{currency}} Account No.</td><td>{{account_no}}</td></tr>
+      <tr><td>Payment Reference</td><td>P/I No. {{pi_number}} / Ref. {{ref_number}}</td></tr>
+    </table>
+  </div>
+
+  <div class="signature">
+    <div class="sig-block">
+      <div class="sig-block-title">Seller — Authorized Signature &amp; Stamp</div>
+      <div class="sig-line">HANGZHOU BETRUE IMPORT &amp; EXPORT CO., LTD</div>
+    </div>
+    <div class="sig-block">
+      <div class="sig-block-title">Buyer — Confirmed &amp; Accepted</div>
+      <div class="sig-line">{{buyer_name}}</div>
+    </div>
+  </div>
+
+  <div class="footer-note">
+    This Proforma Invoice is issued for buyer's reference and purpose of applying for import license / payment arrangement.<br>
+    This document is valid until {{valid_until}}. Prices and availability are subject to change without prior notice.<br>
+    Insurance and freight are buyer's responsibility unless otherwise agreed. &nbsp;|&nbsp; P/I No. {{pi_number}} &nbsp;|&nbsp; Issued by Hangzhou Betrue Import &amp; Export Co., Ltd
+  </div>
+
+</div>
+</body>
+</html>
