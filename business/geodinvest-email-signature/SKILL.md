@@ -58,10 +58,22 @@ HANGZHOU BETRUE IMPORT AND EXPORT CO., LTD<br><br>
 
 批量替换链接时，必须执行 **三轮验证**：
 
-1. **旧链接残留** — `grep -r "旧URL"` 全量检查
-2. **新链接覆盖** — `grep -r "新URL"` 确认覆盖文件数
+1. **旧链接残留** — `grep -r "旧URL" 全量检查
+2. **新链接覆盖** — `grep -r "新URL" 确认覆盖文件数
 3. **尾部斜杠** — `grep "新URL_without_slash">` 专门检查是否有 `">` 结尾的漏网之鱼
 
-> ⚠️ 教训：ECOPA 链接从 `nwn3f51fjzkx` 换到 `n28cyp23x414` 时，已更新的文件里 `">` 结尾漏加 `/` 导致链接打不开。自动化 replace 只替换了文本，没有验证 URL 完整性。
->
-> 每次链接更新后，**必须检查文件中是否有 `xxx.space.minimaxi.com">`（缺尾部 `/`）的模式**，手动补全。
+> ⚠️ 教训：ECOPA 链接从 `nwn3f51fjzkx` 换到 `n28cyp23x414` 时，已更新的文件里 `">` 结尾漏加 `/` 导致链接打不开。
+
+## 🔗 签名链接四按钮对应关系（2026-06-03 新增）
+
+邮件签名中 **四个链接各司其职，不能混用**：
+
+| 位置 | 按钮文字 | 链接目标 | 正确 URL |
+|------|---------|---------|---------|
+| ECOPA 品牌行 | `🌿 ECOPA` | ECOPA 落地页 | `https://n28cyp23x414.space.minimaxi.com/` |
+| 服务行 · Global Supply | `Global Supply` | ECOPA 落地页 | `https://n28cyp23x414.space.minimaxi.com/` |
+| 服务行 · European Project Cooperation | `European Project Cooperation` | ECOPA 落地页 | `https://n28cyp23x414.space.minimaxi.com/` |
+| 服务行 · China-Europe Cross-Border | `China-Europe Cross-Border` | ECOPA 落地页 | `https://n28cyp23x414.space.minimaxi.com/` |
+| View Full Catalogue 按钮 | `📄 View Full Catalogue →` | **WIX 产品目录** | `https://geodinvest.wixel.com/a7a84645-00b8-4293-9141-311ac3a8863d` |
+
+> ⚠️ 教训：David 截图显示 `View Full Catalogue →` 链接到了 `geodinvest.com`（旧版），应链接到 WIX 目录页。ECOPA 落地页和 WIX 目录页是两个不同页面，**不能互相替换**。
